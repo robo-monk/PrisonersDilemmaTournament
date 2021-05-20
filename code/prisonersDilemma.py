@@ -3,6 +3,7 @@ import itertools
 import importlib
 import numpy as np
 import random
+from rich import print
 
 STRATEGY_FOLDER = "exampleStrats"
 RESULTS_FILE = "results.txt"
@@ -42,6 +43,7 @@ def runRound(pair):
     memoryB = None
     
     LENGTH_OF_GAME = int(200-40*np.log(random.random())) # The games are a minimum of 50 turns long. The np.log here guarantees that every turn after the 50th has an equal (low) chance of being the final turn.
+    LENGTH_OF_GAME = int(10) # The games are a minimum of 50 turns long. The np.log here guarantees that every turn after the 50th has an equal (low) chance of being the final turn.
     history = np.zeros((2,LENGTH_OF_GAME),dtype=int)
     
     for turn in range(LENGTH_OF_GAME):
@@ -106,15 +108,18 @@ def runFullPairingTournament(inFolder, outFile):
     rankings = np.argsort(scoresNumpy)
 
     f.write("\n\nTOTAL SCORES\n")
+    _board = "Results: \n\n"
     for rank in range(len(STRATEGY_LIST)):
         i = rankings[-1-rank]
         score = scoresNumpy[i]
         scorePer = score/(len(STRATEGY_LIST)-1)
-        f.write("#"+str(rank+1)+": "+pad(STRATEGY_LIST[i]+":",16)+' %.3f'%score+'  (%.3f'%scorePer+" average)\n")
+        _board += "#"+str(rank+1)+": "+pad(STRATEGY_LIST[i]+":",16)+' %.3f'%score+'  (%.3f'%scorePer+" average)\n"
+        f.write(_board)
         
     f.flush()
     f.close()
     print("Done with everything! Results file written to "+RESULTS_FILE)
+    print(_board)
     
     
 runFullPairingTournament(STRATEGY_FOLDER, RESULTS_FILE)
